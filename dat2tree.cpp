@@ -1,14 +1,22 @@
-//
+#include "TFile.h"
+#include "TTree.h"
+#include "TString.h"
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <sstream>
+
+using namespace::std;
 
 void get_hit_parten_info(string s, Bool_t &pu);
 
 //
-void dat2tree(TString filename)
+void dat2tree(int run_num)
 {
   ifstream fi;
-  fi.open(filename.Data());
+  fi.open(TString::Format("../data/run%04d.dat",run_num).Data());
   if(!fi){
-    cout << "can not open " << filename.Data() << endl;
+    cout << "can not open " << TString::Format("../data/run%04d.dat",run_num).Data() << endl;
     return;
   }
 
@@ -34,6 +42,7 @@ void dat2tree(TString filename)
     cout << "wrong run type" << endl;
     return;
   }
+  /*
   string t1, t2;
   getline(ss, t1, ',');
   getline(ss, t2, ',');
@@ -42,8 +51,9 @@ void dat2tree(TString filename)
   char buffer[256];
   std::strftime(buffer, sizeof(buffer), "%Y-%m-%d-%H-%M-%S", time_info);
   cout << buffer << endl;
+  */
 
-  TFile *fo =  new TFile(TString::Format("./rootfile/%s_%s.root",buffer,run_type.c_str()).Data(), "recreate");
+  TFile *fo =  new TFile(TString::Format("./rootfile/run%04d_%s.root",run_num,run_type.c_str()).Data(), "recreate");
 
   //line3
   line.clear();
@@ -127,4 +137,19 @@ void get_hit_parten_info(string s, Bool_t &pu)
 
   int hit = std::stoi(s, nullptr, 16);
   pu = (hit&k_mask_pile_up)>>k_shift_pile_up;
+}
+
+//
+int main(int argc, char *argv[])
+{
+  if(argc != 2){
+    std::cout << "need parameter" << std::endl;
+    std::cout << "like: dat2tree 33" << std::endl;
+    return -1;
+  }
+
+  int run = atoi(argv[1]);
+  dat2tree(run);
+
+  return 0;
 }

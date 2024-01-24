@@ -1,3 +1,13 @@
+#include "TFile.h"
+#include "TTree.h"
+#include "TString.h"
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <cstdio>
+
+using namespace::std;
 
 //
 struct file_header{
@@ -41,11 +51,11 @@ int get_hit_parten_info(uint16_t hp1, uint16_t hp2, Bool_t &pu);
 
 
 //
-void bin2tree(TString filename, TString fileout_name)
+void bin2tree(int run_num)
 {
-  FILE *fi = fopen(filename.Data(), "rb");
+  FILE *fi = fopen(TString::Format("../data/run%04d.b00",run_num).Data(), "rb");
   if(!fi){
-    cout << "can not open " << filename.Data() << endl;
+    cout << "can not open " << TString::Format("../data/run%04d.b00",run_num).Data() << endl;
     return;
   }
 
@@ -81,7 +91,10 @@ void bin2tree(TString filename, TString fileout_name)
   */
 
   //
-  TFile *fo =  new TFile(TString::Format("./rootfile/%s.root",fileout_name.Data()).Data(), "recreate");
+  stringstream ss_rt;
+  ss_rt << std::hex << fi_h.run_format;
+  TFile *fo =  new TFile(TString::Format("./rootfile/run%04d_0x%s.root",run_num,ss_rt.str().c_str()).Data(), "recreate");
+  cout << TString::Format("./rootfile/run%04d_0x%s.root",run_num,ss_rt.str().c_str()).Data() << endl;
   TTree *tr = new TTree("tr", TString::Format("run_format_%d",fi_h.run_format).Data());
 
   Short_t ch;
@@ -336,3 +349,19 @@ int get_hit_parten_info(uint16_t hp1, uint16_t hp2, Bool_t &pu)
 
   return 0;
 }
+
+//
+int main(int argc, char *argv[])
+{
+  if(argc != 2){
+    std::cout << "need parameter" << std::endl;
+    std::cout << "like: bin2tree 33" << std::endl;
+    return -1;
+  }
+
+  int run = atoi(argv[1]);
+  bin2tree(run);
+
+  return 0;
+}
+
