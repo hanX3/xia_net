@@ -91,6 +91,10 @@ void bin2tree(int run_num)
   */
 
   //
+  if(fi_h.run_format != 0x400){
+    cout << "only suitbale for runn type " << std::hex << fi_h.run_format << endl;
+    return ;
+  }
   stringstream ss_rt;
   ss_rt << std::hex << fi_h.run_format;
   TFile *fo =  new TFile(TString::Format("./rootfile/run%04d_0x%s.root",run_num,ss_rt.str().c_str()).Data(), "recreate");
