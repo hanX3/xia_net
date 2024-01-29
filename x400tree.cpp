@@ -51,7 +51,7 @@ int get_hit_parten_info(uint16_t hp1, uint16_t hp2, Bool_t &pu);
 
 
 //
-void bin2tree(int run_num)
+void x400tree(int run_num)
 {
   FILE *fi = fopen(TString::Format("../data/run%04d.b00",run_num).Data(), "rb");
   if(!fi){
@@ -364,7 +364,7 @@ int main(int argc, char *argv[])
   }
 
   int run = atoi(argv[1]);
-  bin2tree(run);
+  x400tree(run);
 
   return 0;
 }
